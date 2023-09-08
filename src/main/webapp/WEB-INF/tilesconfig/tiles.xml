@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+  "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" 
+  "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>  
+   <!-- Base Definition -->
+   <definition name="base-rbts" template="/WEB-INF/views/layouts/template.jsp">  
+       <put-attribute name="title" value="" />  
+       <put-attribute name="header" value="/WEB-INF/views/layouts/header.jsp" />  
+       <put-attribute name="main_header" value="/WEB-INF/views/layouts/main_header.jsp" />  
+       <put-attribute name="side_bar" value="/WEB-INF/views/layouts/side_bar.jsp" />  
+       <put-attribute name="body" value="" />  
+       <put-attribute name="footer" value="/WEB-INF/views/layouts/footer.jsp" />  
+   </definition>  
+  
+  <!-- Masters Page -->
+   <definition name="masters" extends="base-rbts">
+       <put-attribute name="title" value="ERP SUIT" /> 
+       <put-attribute name="body" value="/WEB-INF/views/tsrb/masters.jsp" /> 
+   </definition>
+   
+   <!-- Home Page -->
+   <definition name="home_rbts" extends="base-rbts">  
+       <put-attribute name="title" value="ERP SUIT" /> 
+       <put-attribute name="body" value="/WEB-INF/views/tsrb/home_adc.jsp" /> 
+   </definition>
+   
+   <definition name="reg_appointments" extends="base-rbts">
+       <put-attribute name="title" value="RB | Appointments" /> 
+       <put-attribute name="body" value="/WEB-INF/views/tsrb/reg_appontments.jsp" /> 
+   </definition>
+   
+   <definition name="approved_list" extends="base-rbts">
+       <put-attribute name="title" value="RB | Approved list" /> 
+       <put-attribute name="body" value="/WEB-INF/views/tsrb/approvedlist.jsp" /> 
+   </definition>
+   
+   <definition name="changepass" extends="base-rbts">
+       <put-attribute name="title" value="RB | Change Password" /> 
+       <put-attribute name="body" value="/WEB-INF/views/common/change_pass.jsp" /> 
+   </definition>
+   
+   <definition name="add_gallery" extends="base-rbts">
+       <put-attribute name="title" value="Upload To Gallery" /> 
+       <put-attribute name="body" value="/WEB-INF/views/add_gallery.jsp" /> 
+   </definition>
+   
+   <definition name="edit_gallery" extends="base-rbts">
+       <put-attribute name="title" value="Upload Gallery" /> 
+       <put-attribute name="body" value="/WEB-INF/views/edit_gallery.jsp" /> 
+   </definition>
+   
+   <definition name="delete_gallery" extends="base-rbts">
+       <put-attribute name="title" value="Delete From Gallery" /> 
+       <put-attribute name="body" value="/WEB-INF/views/delete_gallery.jsp" /> 
+   </definition>
+   
+</tiles-definitions>
