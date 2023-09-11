@@ -1,1 +1,1 @@
-<p> 2020 © Copyright by National Informatics Center, Hyderabad</p>
+<p> Copyright © DIGIKS INFOTECH. All Rights Reserved</p>

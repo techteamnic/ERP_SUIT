@@ -9,6 +9,9 @@
   /*  background-image: url("../../img/page-bgg.gif");
     background-color: #ffe9de;*/
 	}
+	.banner img {
+	width:100%;
+	}
 .image-box2 {
 	
     position: relative;
@@ -129,10 +132,11 @@ p{
 .Noticeboard_list ul li a:hover, .indent3 li a:hover {
     color: #ef940e;
 }
-.header{
-    border-bottom: 1px solid white;
-    background: #16347b;
-    background-image: linear-gradient(to left, #5150b7, #05246b00 50%, #e91e1e00 50%, #5150b7);
+.header h1{
+    text-align: center;
+    padding: 20px;
+    font-weight: 600;
+    color: #4b49ac;
 }
 .header img{
     width:100% !important;
