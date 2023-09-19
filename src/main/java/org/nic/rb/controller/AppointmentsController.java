@@ -119,7 +119,7 @@ public class AppointmentsController {
 			else {
 				file_id = Integer.parseInt(file_name);
 			}
-			if(file_id != null && !(file_id == 1 || file_id == 2 || file_id == 3)) {
+			if(file_id != null && !(file_id == 1 || file_id == 2 || file_id == 3 || file_id == 4)) {
 				model.addAttribute("error_msg", new ValidationException("File name Invalid."));
 				return "error/notfound";
 			}
@@ -140,6 +140,10 @@ public class AppointmentsController {
 		
 		case "3":
 			file = "org_evnt_celb_doc";
+			break;
+			
+		case "4":
+			file = "educational_info";
 			break;
 		}
 		
@@ -339,6 +343,7 @@ public class AppointmentsController {
 	}
 	
 	//APPLICAATION ACCEPTED
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value="appl_accepted.do", method=RequestMethod.GET)
 	public String getApplAccepted(Model model, HttpServletRequest request) {
 		HttpSession session = request.getSession();

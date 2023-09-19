@@ -1,6 +1,11 @@
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <section class="sidebar">
+   <security:authorize access="hasAuthority('User')">
+   		<ul class="sidebar-menu">
+        	<li><a href="${pageContext.request.contextPath}/user/adc_forwarded.do"><i class="fa fa-edit"></i> Adc Forwarded Applications </a></li>
+	    </ul>
+   </security:authorize>
    <security:authorize access="hasAuthority('Adc')">
         <ul class="sidebar-menu">
         	<li><a href="${pageContext.request.contextPath}/rb_chief/new_appontment.do"><i class="fa fa-edit"></i> New Entry </a></li>
@@ -14,6 +19,7 @@
             </span>
           </a>
           <ul class="treeview-menu">
+		    <li><a href="${pageContext.request.contextPath}/rb_chief/educationalDetails.do"><i class="fa fa-caret-right"></i> Education Details </a></li>	
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/representation_registered.do"><i class="fa fa-caret-right"></i> Submit Representation </a></li>	
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/message_registered.do"><i class="fa fa-caret-right"></i> Request for Message </a></li>			
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/courtesy_registered.do"><i class="fa fa-caret-right"></i> Courtesy Call </a></li>

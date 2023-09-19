@@ -55,4 +55,9 @@
        <put-attribute name="body" value="/WEB-INF/views/delete_gallery.jsp" /> 
    </definition>
    
+   <definition name="educationaldetails" extends="base-rbts">
+       <put-attribute name="title" value="Education Details" /> 
+       <put-attribute name="body" value="/WEB-INF/views/educationaldetails.jsp" /> 
+   </definition>
+   
 </tiles-definitions>

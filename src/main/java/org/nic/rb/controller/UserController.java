@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.nic.rb.constants.TSRBLogger;
+import org.nic.rb.dao.UserDao;
+import org.nic.rb.entity.User;
 import org.nic.rb.entity.UserLogTrace;
 import org.nic.rb.model.PasswordModel;
 import org.nic.rb.service.AppointmentService;
@@ -33,7 +35,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-@SessionAttributes({"user_name", "user_role", "months", "up_ran_val"})
+@SessionAttributes({"user_name", "user_role", "months", "up_ran_val","user_id","role_id"})
 public class UserController {
 	
 	Logger logger = TSRBLogger.getTSRBLogger(this.getClass());
@@ -53,9 +55,17 @@ public class UserController {
 	@Autowired
 	private UserLogService userLogService;
 	
+	@Autowired
+	private UserDao userDao;
+	
 	@RequestMapping(value="tsrb.do")
 	public String login_home(Model model, HttpServletRequest request, HttpServletResponse response) {
 		Object principal =  SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user_details = userDao.findUserByuserNames(((UserDetails) principal).getUsername());
+		
+		Integer role_id = Integer.valueOf(user_details.getRole_id());
+		String full_name = user_details.getFullname().trim();
+		
 		if(principal instanceof UserDetails){
 			UserLogTrace userLogTrace = new UserLogTrace();
 			userLogTrace.setUsername(((UserDetails) principal).getUsername());
@@ -67,6 +77,9 @@ public class UserController {
 			request.getSession().removeAttribute("user_id");
 			model.addAttribute("user_role", ((UserDetails) principal).getAuthorities().iterator().next().getAuthority().toLowerCase());
 			model.addAttribute("user_name", ((UserDetails) principal).getUsername());
+			model.addAttribute("full_name", full_name);
+			model.addAttribute("user_id", user_details.getId());
+			model.addAttribute("role_id", user_details.getRole_id());
 			logger.debug("User Logged In Successfully {}", ((UserDetails) principal).getUsername());
 		}
 		switch (((UserDetails) principal).getAuthorities().iterator().next().getAuthority()) {

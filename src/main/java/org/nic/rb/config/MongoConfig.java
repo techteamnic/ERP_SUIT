@@ -22,7 +22,7 @@ public class MongoConfig extends AbstractMongoConfiguration{
 	@Override
 	protected String getDatabaseName() {
 		/*return "rajbhavan_ts";*/
-		return "rajbhavan_ts";
+		return "erp_suit";
 	}
 
 	@Override

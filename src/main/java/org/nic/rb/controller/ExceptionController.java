@@ -35,8 +35,8 @@ public class ExceptionController implements ErrorController{
 	    		return "error/403";
 			}
 	    	else if(statusCode == HttpStatus.NOT_FOUND.value()) {
-	        	logger.error("ExceptionController 404 - {}", statusCode);
-	            return "error/404";
+//	        	logger.error("ExceptionController 404 - {}", statusCode);
+//	            return "error/404";
 	        }
 	    	else if (statusCode == HttpStatus.METHOD_NOT_ALLOWED.value()) {
 	    		logger.error("ExceptionController 405 - {}", statusCode);

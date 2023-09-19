@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import com.mongodb.client.gridfs.GridFSFindIterable;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 @Component
@@ -66,6 +67,8 @@ public class MongoOperations {
 	public GridFsResource getDocumentById(String doc_id, String bucket) {
 		Class<? extends GridFsTemplate> cls = gridFsTemplate.getClass();
 		java.lang.reflect.Field bucket_field = null;
+		
+		System.out.println("------doc_id"+doc_id+" -----------bucket "+bucket);
 		try {
 			bucket_field = cls.getDeclaredField("bucket");
 			if(bucket_field != null) {
@@ -74,14 +77,28 @@ public class MongoOperations {
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			logger.error("EXCEPTION in Mongo Operations getDocumentById OF TYPE NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException {}", e.getMessage());
-//			e.printStackTrace();
+			e.printStackTrace();
 		}
 		DBObject metaData = new BasicDBObject();
 		metaData.put("doc_id", doc_id);
 		
-		GridFSFile grid_file = gridFsTemplate.findOne(new Query(Criteria.where("metadata.doc_id").is(doc_id)));
+		/*
+		 * This block of code gives single record first one (ascending order)
+		 * 
+		 * GridFSFile grid_file = gridFsTemplate.findOne(new Query(Criteria.where("metadata.doc_id").is(doc_id)));
 		if(grid_file != null) {
 			return gridFsTemplate.getResource(grid_file);
+		}*/
+		
+		
+		// The following block of code gives latest single record
+		GridFSFindIterable grid_file = gridFsTemplate.find(new Query(Criteria.where("metadata.doc_id").is(doc_id)));
+		if(grid_file != null) {
+			GridFsResource gridfsres = null;
+			for (GridFSFile gridFSFile : grid_file) {
+				gridfsres = gridFsTemplate.getResource(gridFSFile);
+			}
+			return gridfsres;
 		}
 		return null;
 	}
@@ -130,7 +147,7 @@ public class MongoOperations {
 			}
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			logger.error("EXCEPTION in Mongo Operations inserDocument OF TYPE NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException {}", e.getMessage());
-	//		e.printStackTrace();
+			e.printStackTrace();
 		}
 		DBObject metaData = new BasicDBObject();
 		metaData.put("doc_id", doc_id);
