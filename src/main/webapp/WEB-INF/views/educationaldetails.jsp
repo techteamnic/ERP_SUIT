@@ -305,7 +305,8 @@
 				</form:form>
 			</div>
 		</div>
-	</div>{{educationaldetails
+	</div>
+<!-- 	{{educationaldetails}} -->
 	<div class="container-fluid">
 		<div class="box form_content">
 			<div class="table-responsive">

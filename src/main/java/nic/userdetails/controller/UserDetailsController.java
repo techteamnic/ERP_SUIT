@@ -11,10 +11,10 @@ import javax.servlet.http.HttpSession;
 
 import org.nic.rb.constants.TSRBLogger;
 import org.nic.rb.mongo.MongoOperations;
+import org.nic.rb.validator.Validations;
 import org.slf4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,7 +31,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import nic.commons.daoimpl.StatesUtil;
 import nic.commons.util.DateUtils;
-import org.nic.rb.validator.Validations;
 import nic.config.MongoRepository;
 import nic.constants.GlobalMessages;
 import nic.userdetails.dao.UserDetailsDao;
@@ -40,6 +39,7 @@ import nic.userdetails.entity.EducationalDetailsEntity;
 import nic.userdetails.entity.WorkExperienceEntity;
 import nic.userdetails.model.AwardsModel;
 import nic.userdetails.model.EducationalDetailsModel;
+import nic.userdetails.model.PersonalModel;
 import nic.userdetails.model.WorkExperienceModel;
 import nic.userdetails.validator.UserDetailsValidator;				
 				
@@ -240,62 +240,35 @@ public class UserDetailsController {
 		HttpSession session = request.getSession();
 		try {
 			List<WorkExperienceModel> data = dao.getWorkexperience((Integer) session.getAttribute("user_id"));
-			List<WorkExperienceModel> dataPhd = dao.getWorkexperiencePhd((Integer) session.getAttribute("user_id"));
-			List<WorkExperienceModel> nonfacdata = dao.getNonfacWorkexperience((Integer) session.getAttribute("user_id"));
-			if ((Integer) session.getAttribute("role_id") == 4) {
-				if (data != null && data.size() > 0) {
-					long data_exp_days = 0;
-					for (WorkExperienceModel data_workExperienceModel : data) {
-						data_exp_days =  data_exp_days + DateUtils.calcNoOfDays(data_workExperienceModel.getJoining_date_db(), data_workExperienceModel.getLeaving_date_db());
-					}
-					
-					WorkExperienceModel total_exp_pg = new WorkExperienceModel();
-					total_exp_pg.setWork_exp_db("Total Experience");
-					total_exp_pg.setTotal_exp_db(DateUtils.daysToYearsAndMonths(data_exp_days));
-					data.add(total_exp_pg);
-					model.addAttribute("copdetails", jsonMapper.writeValueAsString(data));
-				} else {
-					model.addAttribute("copdetails", "[]");
+			if (data.size() > 0) {
+				try {
+//					model.addAttribute("copdetails", jsonMapper.writeValueAsString(data));
+					model.addAttribute("copdetails", data);
+				} catch (Exception e) {
+					logger.error("Exception occurs in Controller" + e.getMessage());
 				}
-				if(dataPhd != null && dataPhd.size() > 0) {
-					long dataPhd_exp_days = 0;
-					for (WorkExperienceModel dataPhdworkExperienceModel : dataPhd) {
-						dataPhd_exp_days = dataPhd_exp_days + DateUtils.calcNoOfDays(dataPhdworkExperienceModel.getJoining_date_db(), dataPhdworkExperienceModel.getLeaving_date_db());
-					}
-					
-					WorkExperienceModel total_exp_phd = new WorkExperienceModel();
-					total_exp_phd.setWork_exp_db("Total Experience");
-					total_exp_phd.setTotal_exp_db(DateUtils.daysToYearsAndMonths(dataPhd_exp_days));
-					dataPhd.add(total_exp_phd);
-					model.addAttribute("expPhd", jsonMapper.writeValueAsString(dataPhd));
-				}
-				else {
-					model.addAttribute("expPhd", "[]");
-				}
-				
-			}else if((Integer) session.getAttribute("role_id") == 3){
-				if(nonfacdata != null && nonfacdata.size() > 0) {
-					long nondata_exp_days = 0;
-					for (WorkExperienceModel dataPhdworkExperienceModel : nonfacdata) {
-						nondata_exp_days = nondata_exp_days + DateUtils.calcNoOfDays(dataPhdworkExperienceModel.getJoining_date_db(), dataPhdworkExperienceModel.getLeaving_date_db());
-					}
-					
-					WorkExperienceModel total_exp_phd = new WorkExperienceModel();
-					total_exp_phd.setWork_exp_db("Total Experience");
-					total_exp_phd.setTotal_exp_db(DateUtils.daysToYearsAndMonths(nondata_exp_days));
-					nonfacdata.add(total_exp_phd);
-					model.addAttribute("nonfacdata", jsonMapper.writeValueAsString(nonfacdata));
-				}
-				else {
-					model.addAttribute("nonfacdata", "[]");
-				}
-			}else return null;
+			} else {
+				model.addAttribute("copdetails", "[]");
+			}
+//			if (data != null && data.size() > 0) {
+//				long data_exp_days = 0;
+//				for (WorkExperienceModel data_workExperienceModel : data) {
+//					data_exp_days =  data_exp_days + DateUtils.calcNoOfDays(data_workExperienceModel.getJoining_date_db(), data_workExperienceModel.getLeaving_date_db());
+//				}
+//				
+//				/*WorkExperienceModel total_exp_pg = new WorkExperienceModel();
+//				total_exp_pg.setWork_exp_db("Total Experience");
+//				total_exp_pg.setTotal_exp_db(DateUtils.daysToYearsAndMonths(data_exp_days));
+//				data.add(total_exp_pg);*/
+//				model.addAttribute("copdetails", jsonMapper.writeValueAsString(data));
+//			} else {
+//				model.addAttribute("copdetails", "[]");
+//			}
 			
 		} catch (Exception e) {
+			e.printStackTrace();
 			logger.error("Exception occurs in Controller" + e.getMessage());
 			model.addAttribute("copdetails", "[]");
-			model.addAttribute("expPhd", "[]");
-			model.addAttribute("nonfacdata", "[]");
 		}
 		return "workexperience";
 	}
@@ -308,7 +281,7 @@ public class UserDetailsController {
 	if(errors.hasErrors()) {
 		try {
 			List<WorkExperienceModel> data = dao.getWorkexperience((Integer) session.getAttribute("user_id"));
-			List<WorkExperienceModel> dataPhd = dao.getWorkexperiencePhd((Integer) session.getAttribute("user_id"));
+//			List<WorkExperienceModel> dataPhd = dao.getWorkexperiencePhd((Integer) session.getAttribute("user_id"));
 			if (data != null && data.size() > 0) {
 				long data_exp_days = 0;
 				for (WorkExperienceModel data_workExperienceModel : data) {
@@ -323,21 +296,21 @@ public class UserDetailsController {
 			} else {
 				model.addAttribute("copdetails", "[]");
 			}
-			if(dataPhd != null && dataPhd.size() > 0) {
-				long dataPhd_exp_days = 0;
-				for (WorkExperienceModel dataPhdworkExperienceModel : dataPhd) {
-					dataPhd_exp_days = dataPhd_exp_days + DateUtils.calcNoOfDays(dataPhdworkExperienceModel.getJoining_date_db(), dataPhdworkExperienceModel.getLeaving_date_db());
-				}
-				
-				WorkExperienceModel total_exp_phd = new WorkExperienceModel();
-				total_exp_phd.setWork_exp_db("Total Experience");
-				total_exp_phd.setTotal_exp_db(DateUtils.daysToYearsAndMonths(dataPhd_exp_days));
-				dataPhd.add(total_exp_phd);
-				model.addAttribute("expPhd", jsonMapper.writeValueAsString(dataPhd));
-			}
-			else {
-				model.addAttribute("expPhd", "[]");
-			}
+//			if(dataPhd != null && dataPhd.size() > 0) {
+//				long dataPhd_exp_days = 0;
+//				for (WorkExperienceModel dataPhdworkExperienceModel : dataPhd) {
+//					dataPhd_exp_days = dataPhd_exp_days + DateUtils.calcNoOfDays(dataPhdworkExperienceModel.getJoining_date_db(), dataPhdworkExperienceModel.getLeaving_date_db());
+//				}
+//				
+//				WorkExperienceModel total_exp_phd = new WorkExperienceModel();
+//				total_exp_phd.setWork_exp_db("Total Experience");
+//				total_exp_phd.setTotal_exp_db(DateUtils.daysToYearsAndMonths(dataPhd_exp_days));
+//				dataPhd.add(total_exp_phd);
+//				model.addAttribute("expPhd", jsonMapper.writeValueAsString(dataPhd));
+//			}
+//			else {
+//				model.addAttribute("expPhd", "[]");
+//			}
 		} catch (Exception e) {
 			logger.error("Exception occurs in Controller" + e.getMessage());
 			model.addAttribute("copdetails", "[]");
@@ -373,29 +346,31 @@ public class UserDetailsController {
 			if(worModel.getId() == null) {
 				if(worModel.getExp_doc() != null && !worModel.getExp_doc().isEmpty()) {
 					worEntity.setExp_doc_id(UUID.randomUUID().toString());
+					mongoOperations.storeGallery(worModel.getExp_doc(), worEntity.getExp_doc_id(), UserDetailsController.EXP_DOC);
 //					mongoRepository.saveFile(worModel.getExp_doc(), UserDetailsController.EXP_DOC, worEntity.getExp_doc_id());
 				}
-					 details = dao.addWorkexperience(worEntity);
-				} else {
-					if(worModel.getExp_doc_id() != null && !worModel.getExp_doc_id().isEmpty()) {
-						worEntity.setExp_doc_id(worModel.getExp_doc_id());
-					}
-						
-					if(worModel.getExp_doc() != null && !worModel.getExp_doc().isEmpty()) {
-						if(worModel.getExp_doc_id() != null && !worModel.getExp_doc_id().isEmpty()) {
-//							mongoRepository.saveFile(worModel.getExp_doc(), UserDetailsController.EXP_DOC, worEntity.getExp_doc_id());
-						} else {
-							worEntity.setExp_doc_id(UUID.randomUUID().toString());
-//							mongoRepository.saveFile(worModel.getExp_doc(), UserDetailsController.EXP_DOC, worEntity.getExp_doc_id());
-						}
-					}
-					
-					worEntity.setId(worModel.getId());
-					worEntity.setModified_by(username);
-					worEntity.setModified_date(date);
-						
-					details = dao.addWorkexperience(worEntity);
+				 details = dao.addWorkexperience(worEntity);
+			} else {
+				if(worModel.getExp_doc_id() != null && !worModel.getExp_doc_id().isEmpty()) {
+					worEntity.setExp_doc_id(worModel.getExp_doc_id());
 				}
+					
+				if(worModel.getExp_doc() != null && !worModel.getExp_doc().isEmpty()) {
+					if(worModel.getExp_doc_id() != null && !worModel.getExp_doc_id().isEmpty()) {
+						mongoOperations.storeGallery(worModel.getExp_doc(), worEntity.getExp_doc_id(), UserDetailsController.EXP_DOC);
+//							mongoRepository.saveFile(worModel.getExp_doc(), UserDetailsController.EXP_DOC, worEntity.getExp_doc_id());
+					} else {
+						worEntity.setExp_doc_id(UUID.randomUUID().toString());
+						mongoOperations.storeGallery(worModel.getExp_doc(), worEntity.getExp_doc_id(), UserDetailsController.EXP_DOC);
+//							mongoRepository.saveFile(worModel.getExp_doc(), UserDetailsController.EXP_DOC, worEntity.getExp_doc_id());
+					}
+				}
+				
+				worEntity.setId(worModel.getId());
+				worEntity.setModified_by(username);
+				worEntity.setModified_date(date);
+				details = dao.addWorkexperience(worEntity);
+			}
 		}catch(Exception e) {		
 			e.printStackTrace();	
 		}		
@@ -442,7 +417,7 @@ public class UserDetailsController {
 	HttpSession session = request.getSession();			
 	int details = 0;			
 	date = new Date();			
-	try {			
+	try {
 		role_name = (String) session.getAttribute("userrole");		
 		username = (String) session.getAttribute("username");		
 		role_id = (Integer) session.getAttribute("role_id");
@@ -466,8 +441,8 @@ public class UserDetailsController {
 			}	
 		}catch(Exception e) {		
 			e.printStackTrace();	
-		}		
-		if(details != 1) {		
+		}
+		if(details != 1) {
 			redirect.addFlashAttribute("message", "error");	
 			return "redirect:WorkExperienceBPhd.do";	
 		} else {		
@@ -497,8 +472,10 @@ public class UserDetailsController {
 			List<AwardsModel> awards = dao.getAwards((Integer) session.getAttribute("user_id"));
 			List<AwardsModel> achivements = dao.getAchivements((Integer) session.getAttribute("user_id"));
 			if (awards.size() > 0 || achivements.size() > 0) {
-				model.addAttribute("copdetails", jsonMapper.writeValueAsString(awards));
-				model.addAttribute("copdetails2", jsonMapper.writeValueAsString(achivements));
+//				model.addAttribute("copdetails", jsonMapper.writeValueAsString(awards));
+//				model.addAttribute("copdetails2", jsonMapper.writeValueAsString(achivements));
+				model.addAttribute("copdetails", awards);
+				model.addAttribute("copdetails2", achivements);
 			} else {
 				model.addAttribute("copdetails", "[]");
 				model.addAttribute("copdetails2", "[]");
@@ -518,8 +495,8 @@ public class UserDetailsController {
 			List<AwardsModel> awards = dao.getAwards((Integer) session.getAttribute("user_id"));
 			List<AwardsModel> achivements = dao.getAchivements((Integer) session.getAttribute("user_id"));
 			if (awards.size() > 0 || achivements.size() > 0) {
-				model.addAttribute("copdetails", jsonMapper.writeValueAsString(awards));
-				model.addAttribute("copdetails2", jsonMapper.writeValueAsString(achivements));
+				model.addAttribute("copdetails", awards);
+				model.addAttribute("copdetails2", achivements);
 			} else {
 				model.addAttribute("copdetails", "[]");
 				model.addAttribute("copdetails2", "[]");
@@ -553,6 +530,7 @@ public class UserDetailsController {
 				if(awaModel.getId() == null) {
 					if(awaModel.getAwards_doc() != null && !awaModel.getAwards_doc().isEmpty()) {
 						awaEntity.setAwards_doc_id(UUID.randomUUID().toString());
+						mongoOperations.storeGallery(awaModel.getAwards_doc(), awaEntity.getAwards_doc_id(), UserDetailsController.AWARDS_DOC);
 //						mongoRepository.saveFile(awaModel.getAwards_doc(), UserDetailsController.AWARDS_DOC, awaEntity.getAwards_doc_id());
 					}
 					 details = dao.addAwards(awaEntity);
@@ -562,9 +540,11 @@ public class UserDetailsController {
 						
 					if(awaModel.getAwards_doc() != null && !awaModel.getAwards_doc().isEmpty()) {
 						if(awaModel.getAwards_doc_id() != null && !awaModel.getAwards_doc_id().isEmpty()) {
+							mongoOperations.storeGallery(awaModel.getAwards_doc(), awaEntity.getAwards_doc_id(), UserDetailsController.AWARDS_DOC);
 //							mongoRepository.saveFile(awaModel.getAwards_doc(), UserDetailsController.AWARDS_DOC, awaEntity.getAwards_doc_id());
 						} else {
 							awaEntity.setAwards_doc_id(UUID.randomUUID().toString());
+							mongoOperations.storeGallery(awaModel.getAwards_doc(), awaEntity.getAwards_doc_id(), UserDetailsController.AWARDS_DOC);
 //							mongoRepository.saveFile(awaModel.getAwards_doc(), UserDetailsController.AWARDS_DOC, awaEntity.getAwards_doc_id());
 						}
 					}
@@ -596,6 +576,95 @@ public class UserDetailsController {
 				return GlobalMessages.DELETE_DETAILS_MESSAGE;
 			}
 		} else return GlobalMessages.INVALID_NUMMBER;
+	}
+	
+	@RequestMapping(value = "personalDetails.do", method = RequestMethod.GET)
+	public String getPersonalDetails(Model model, @ModelAttribute("personaldetails")PersonalModel personalModel, HttpServletRequest request, BindingResult result) {
+		HttpSession session = request.getSession();
+		try {
+//			model.addAttribute("primary_check", commonutil.getPrimaryCheck((Integer) session.getAttribute("user_id")));
+//			model.addAttribute("publicKey", jsonMapper.writeValueAsString(RSAUtil.publicKey));
+			//For User Access 
+			/*String path = ((HttpServletRequest) request).getRequestURI();
+			int p = path.lastIndexOf("/");
+			String action1 = path.substring(p + 1);
+			username = (String) session.getAttribute("username");
+			user_id = (Integer) session.getAttribute("user_id");
+			UserAccessDetailsModel res = commonutil.getUserAccess(user_id, action1);
+			logger.debug("------username---"+username+"---action1 : "+action1+"---read : "+res.getRead_access()+"---write : "+res.getWrite_access()+"---update : "+res.getUpdate_access()+"---delete : "+res.getDelete_access()+"---Download : "+res.getDownload_access());
+			model.addAttribute("useraccess", res);
+			
+			if(res.getRead_access() == 1) {*/
+				model.addAttribute("userReadAccess", 1);
+				List<PersonalModel> personalDetailsList = dao.getPersonalDetails((Integer) session.getAttribute("user_id"),(Integer) session.getAttribute("role_id"));
+				if (personalDetailsList != null && personalDetailsList.size() > 0) {
+					model.addAttribute("personalDetailsList", jsonMapper.writeValueAsString(personalDetailsList));
+					model.addAttribute("personaluserimage", personalDetailsList.get(0).getUser_image_id());
+					model.addAttribute("category_id", (Integer)session.getAttribute("category_id"));
+				} else {
+					model.addAttribute("personalDetailsList", "[]");
+				}
+			/*} else {
+				model.addAttribute("userReadAccess", 0);
+				model.addAttribute("personalDetailsList", "[]");
+			}*/
+			
+			/*
+			PersonalEntity personalDetailsList = dao.getPersonalDetails((Integer) session.getAttribute("user_id"));
+			if(personalDetailsList != null) {
+				model.addAttribute("personalDetailsList", jsonMapper.writeValueAsString(personalDetailsList));
+				model.addAttribute("passport_identity_doc_id", personalDetailsList.getPassport_identity_doc_id());
+			} else {
+				model.addAttribute("personalDetailsList", "[]");
+			}
+			*/
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Exception oocurs in Controller while fetching the Personal Details" + e.getMessage());
+		}
+		return "personalDetails";
+	}
+	
+	@RequestMapping(value = "addpersonalDetails.do", method = {RequestMethod.POST,RequestMethod.GET})
+	public String addPersonalDetails(Model model, @ModelAttribute("personaldetails") PersonalModel personalModel, HttpServletRequest request, BindingResult errors, RedirectAttributes redirect) {
+		HttpSession session = request.getSession();
+		String details = null;
+		try {
+//			model.addAttribute("publicKey", jsonMapper.writeValueAsString(RSAUtil.publicKey));
+			/*personalModel.setRole_id((Integer) session.getAttribute("role_id"));
+			niperValidator.validate(personalModel, errors);
+			if (errors.hasErrors()) {
+				model.addAttribute("departments", dao.getDepartments());
+				model.addAttribute("positions", dao.getPositions());
+				model.addAttribute("nonfacpositions", dao.getNonFacPositions());
+				model.addAttribute("identityList", dao.getIdentityList());
+				
+				List<PersonalModel> personalDetailsList = dao.getPersonalDetails((Integer) session.getAttribute("user_id"),(Integer) session.getAttribute("role_id"));
+				if (personalDetailsList.size() > 0) {
+					model.addAttribute("personalDetailsList", jsonMapper.writeValueAsString(personalDetailsList));
+				} else {
+					model.addAttribute("personalDetailsList", "[]");
+				}
+				return "personalDetails";
+			}else {
+				details = dao.addPersonalDetails(personalModel,request);
+			}*/
+			
+			details = dao.addPersonalDetails(personalModel,request);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			logger.error("Exception occurs while addPersonalDetails "+e.getMessage());
+		}
+		if (details != null) {
+			redirect.addFlashAttribute("message", "success");
+			redirect.addFlashAttribute("uniqueId", details);
+			return "redirect:personalDetails.do";
+		}else {
+			  redirect.addFlashAttribute("message", "inserterror");
+			  return "redirect:personalDetails.do";
+		}
+	
 	}
 
 	

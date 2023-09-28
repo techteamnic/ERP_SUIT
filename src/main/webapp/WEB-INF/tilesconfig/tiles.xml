@@ -60,4 +60,13 @@
        <put-attribute name="body" value="/WEB-INF/views/educationaldetails.jsp" /> 
    </definition>
    
+   <definition name="workexperience" extends="base-rbts">
+       <put-attribute name="title" value="Work Experience Details" /> 
+       <put-attribute name="body" value="/WEB-INF/views/workexperience.jsp" /> 
+   </definition>
+   <definition name="awards" extends="base-rbts">
+       <put-attribute name="title" value="Awards" /> 
+       <put-attribute name="body" value="/WEB-INF/views/awards.jsp" /> 
+   </definition>
+   
 </tiles-definitions>
