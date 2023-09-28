@@ -185,6 +185,76 @@ public class AppointmentsController {
 		}
 	}
 	
+	
+	@RequestMapping(value="loadDocumentAlt.do", method=RequestMethod.POST)
+	public String loadDocumentAlt(Model model, HttpServletRequest request, HttpServletResponse response, 
+			@RequestParam(value="file_name", required=true) String file_name, 
+			@RequestParam(value="id", required=true) String id) {
+		
+		if(id != null && !id.isEmpty() ) {
+			if(id.length() != 36) {
+				model.addAttribute("error_msg", new ValidationException("Doc Id should contine 36 charecters."));
+				return "error/notfound";
+			}
+			if(!validator.isAlphanumeric(id)) {
+				model.addAttribute("error_msg", new ValidationException("Doc Id Invalid."));
+				return "error/notfound";
+			}
+		} else {
+			model.addAttribute("error_msg", new ValidationException("Doc Id Required."));
+			return "error/notfound";
+		}
+		String file = null;
+		if(file_name != null && !file_name.isEmpty()) {
+			if(!validator.isAlphanumeric(file_name)) {
+				model.addAttribute("error_msg", new ValidationException("File name Invalid."));
+				return "error/notfound";
+			} else {
+				file = file_name;
+			}
+		} else {
+			model.addAttribute("error_msg", new ValidationException("File name Required."));
+			return "error/notfound";
+		}
+		
+		OutputStream ou = null;
+		InputStream sImage = null;
+		GridFsResource doc_file =  mongoOperations.getDocumentById(id, file);
+		if (doc_file != null) {
+			try {
+				ou = response.getOutputStream();
+				byte[] bytearray = new byte[1024];
+				sImage = doc_file.getInputStream();
+				response.reset();
+				response.setContentType(doc_file.getContentType());
+				response.setHeader("X-Frame-Options", "sameorigin");
+				response.setHeader( "Content-Disposition", "filename=" + doc_file.getFilename());
+				while (sImage.read(bytearray, 0, bytearray.length) != -1) {
+					ou.write(bytearray, 0, bytearray.length);
+					ou.flush();
+				}
+			} catch (IOException e) {
+				//e.printStackTrace();
+				logger.error("loadDocument EXCEPTION in AppointMent Controller {}", e.getMessage());
+			}finally {
+				try {
+					if(ou != null)
+						ou.close();
+					
+					if(sImage != null)
+						sImage.close();
+				} catch (IOException e) {
+					logger.error("EXCEPTION Occured While Closing The Stream {}"+e.getMessage());
+				}
+			}
+			return null;
+		}
+		else {
+			model.addAttribute("no_doc", Boolean.TRUE);
+			return "error/notfound";
+		}
+	}
+	
 	//APPLICATIONS REGISTERED
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="appl_registered.do", method=RequestMethod.GET)

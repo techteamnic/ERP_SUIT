@@ -13,13 +13,27 @@
     	<ul class="sidebar-menu">
 		  <li class="treeview">
           <a href="#">
-            <i class="fa fa-edit"></i> <span>Applications for Action</span>
+            <i class="fa fa-edit"></i> <span>User Details</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
           </a>
           <ul class="treeview-menu">
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/educationalDetails.do"><i class="fa fa-caret-right"></i> Education Details </a></li>	
+		    <li><a href="${pageContext.request.contextPath}/rb_chief/WorkExperience.do"><i class="fa fa-caret-right"></i> Work Experience </a></li>	
+		    <li><a href="${pageContext.request.contextPath}/rb_chief/awards.do"><i class="fa fa-caret-right"></i> Awards </a></li>	
+          </ul>
+        </li>
+       </ul>
+       <ul class="sidebar-menu">
+		  <li class="treeview">
+          <a href="#">
+            <i class="fa fa-edit"></i> <span>Applications for Action</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/WorkExperience.do"><i class="fa fa-caret-right"></i> Work Experience-- </a></li>	
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/representation_registered.do"><i class="fa fa-caret-right"></i> Submit Representation </a></li>	
 		    <li><a href="${pageContext.request.contextPath}/rb_chief/message_registered.do"><i class="fa fa-caret-right"></i> Request for Message </a></li>			
